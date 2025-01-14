@@ -1,6 +1,7 @@
 import pytest
 
 from money import Dollar, Money
+from portfolio import Portfolio
 
 
 def test_multiplication():
@@ -39,3 +40,14 @@ def test_division():
         expected_money_after_division.currency
         == actual_money_after_division.currency
     )
+
+
+def test_addition():
+    five_dollars = Money(5, "USD")
+    ten_dollars = Money(10, "USD")
+    fifteen_dollars = Money(15, "USD")
+
+    portfolio = Portfolio()
+    portfolio.add(five_dollars, ten_dollars)
+
+    assert fifteen_dollars == portfolio.evaluate("USD")
