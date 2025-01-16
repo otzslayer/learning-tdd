@@ -44,3 +44,12 @@ def test_addition_of_dollars_and_euros():
     portfolio.add(five_dollars, ten_euros)
 
     assert str(Money(17, "USD")) == str(portfolio.evaluate("USD"))
+
+def test_addition_of_dollars_and_wons():
+    one_dollar = Money(1, "USD")
+    eleven_hundred_won = Money(1100, "KRW")
+
+    portfolio = Portfolio()
+    portfolio.add(one_dollar, eleven_hundred_won)
+
+    assert str(Money(2200, "KRW")) == str(portfolio.evaluate("KRW"))
