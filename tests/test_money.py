@@ -1,24 +1,8 @@
-import pytest
-
-from money import Dollar, Money
+from money import Money
 from portfolio import Portfolio
 
 
 def test_multiplication():
-    fiver = Dollar(5)
-    tenner = fiver.times(2)
-
-    assert tenner.amount == 10
-
-
-def test_multiplication_in_dollars():
-    five_dollars = Money(5, "USD")
-    ten_dollars = Money(10, "USD")
-
-    assert ten_dollars == five_dollars.times(2)
-
-
-def test_multiplication_in_euros():
     ten_euros = Money(10, "EUR")
     twenty_euros = ten_euros.times(2)
 
