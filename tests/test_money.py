@@ -1,3 +1,5 @@
+import pytest
+
 from money import Money
 from portfolio import Portfolio
 
@@ -36,6 +38,7 @@ def test_addition():
 
     assert fifteen_dollars == portfolio.evaluate("USD")
 
+
 def test_addition_of_dollars_and_euros():
     five_dollars = Money(5, "USD")
     ten_euros = Money(10, "EUR")
@@ -45,6 +48,7 @@ def test_addition_of_dollars_and_euros():
 
     assert str(Money(17, "USD")) == str(portfolio.evaluate("USD"))
 
+
 def test_addition_of_dollars_and_wons():
     one_dollar = Money(1, "USD")
     eleven_hundred_won = Money(1100, "KRW")
@@ -53,3 +57,18 @@ def test_addition_of_dollars_and_wons():
     portfolio.add(one_dollar, eleven_hundred_won)
 
     assert str(Money(2200, "KRW")) == str(portfolio.evaluate("KRW"))
+
+
+def test_addition_with_multiple_missing_exchange_rates():
+    one_dollar = Money(1, "USD")
+    one_euro = Money(1, "EUR")
+    one_won = Money(1, "KRW")
+
+    portfolio = Portfolio()
+    portfolio.add(one_dollar, one_euro, one_won)
+
+    with pytest.raises(
+        Exception,
+        match="Missing exchange rate\(s\):\[USD\->Kalagnid,EUR->Kalagnid,KRW->Kalagnid\]",
+    ):
+        portfolio.evaluate("Kalagnid")
