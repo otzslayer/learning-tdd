@@ -35,3 +35,12 @@ def test_addition():
     portfolio.add(five_dollars, ten_dollars)
 
     assert fifteen_dollars == portfolio.evaluate("USD")
+
+def test_addition_of_dollars_and_euros():
+    five_dollars = Money(5, "USD")
+    ten_euros = Money(10, "EUR")
+
+    portfolio = Portfolio()
+    portfolio.add(five_dollars, ten_euros)
+
+    assert str(Money(17, "USD")) == str(portfolio.evaluate("USD"))
