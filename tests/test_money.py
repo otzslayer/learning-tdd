@@ -1,7 +1,16 @@
 import pytest
 
+from bank import Bank
 from money import Money
 from portfolio import Portfolio
+
+
+@pytest.fixture
+def bank():
+    bank = Bank()
+    bank.add_exchange_rate("EUR", "USD", 1.2)
+    bank.add_exchange_rate("USD", "KRW", 1100)
+    return bank
 
 
 def test_multiplication():
@@ -28,7 +37,7 @@ def test_division():
     )
 
 
-def test_addition():
+def test_addition(bank):
     five_dollars = Money(5, "USD")
     ten_dollars = Money(10, "USD")
     fifteen_dollars = Money(15, "USD")
@@ -36,30 +45,30 @@ def test_addition():
     portfolio = Portfolio()
     portfolio.add(five_dollars, ten_dollars)
 
-    assert fifteen_dollars == portfolio.evaluate("USD")
+    assert fifteen_dollars == portfolio.evaluate(bank, "USD")
 
 
-def test_addition_of_dollars_and_euros():
+def test_addition_of_dollars_and_euros(bank):
     five_dollars = Money(5, "USD")
     ten_euros = Money(10, "EUR")
 
     portfolio = Portfolio()
     portfolio.add(five_dollars, ten_euros)
 
-    assert str(Money(17, "USD")) == str(portfolio.evaluate("USD"))
+    assert str(Money(17, "USD")) == str(portfolio.evaluate(bank, "USD"))
 
 
-def test_addition_of_dollars_and_wons():
+def test_addition_of_dollars_and_wons(bank):
     one_dollar = Money(1, "USD")
     eleven_hundred_won = Money(1100, "KRW")
 
     portfolio = Portfolio()
     portfolio.add(one_dollar, eleven_hundred_won)
 
-    assert str(Money(2200, "KRW")) == str(portfolio.evaluate("KRW"))
+    assert str(Money(2200, "KRW")) == str(portfolio.evaluate(bank, "KRW"))
 
 
-def test_addition_with_multiple_missing_exchange_rates():
+def test_addition_with_multiple_missing_exchange_rates(bank):
     one_dollar = Money(1, "USD")
     one_euro = Money(1, "EUR")
     one_won = Money(1, "KRW")
@@ -69,6 +78,18 @@ def test_addition_with_multiple_missing_exchange_rates():
 
     with pytest.raises(
         Exception,
-        match="Missing exchange rate\(s\):\[USD\->Kalagnid,EUR->Kalagnid,KRW->Kalagnid\]",
+        match=r"[(USD\->Kalagnid),(EUR\->Kalagnid),(KRW\->Kalagnid)]",
     ):
-        portfolio.evaluate("Kalagnid")
+        portfolio.evaluate(bank, "Kalagnid")
+
+
+def test_conversion(bank):
+    ten_euros = Money(10, "EUR")
+
+    assert bank.convert(ten_euros, "USD") == Money(12, "USD")
+
+
+def test_conversion_with_missing_exchange_rate(bank):
+    ten_euros = Money(10, "EUR")
+    with pytest.raises(Exception, match="EUR->Kalagnid"):
+        bank.convert(ten_euros, "Kalagnid")
