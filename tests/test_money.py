@@ -83,10 +83,12 @@ def test_addition_with_multiple_missing_exchange_rates(bank):
         portfolio.evaluate(bank, "Kalagnid")
 
 
-def test_conversion(bank):
+def test_conversion_with_different_rates_between_two_currencies(bank):
     ten_euros = Money(10, "EUR")
-
     assert bank.convert(ten_euros, "USD") == Money(12, "USD")
+
+    bank.add_exchange_rate("EUR", "USD", 1.3)
+    assert bank.convert(ten_euros, "USD") == Money(13, "USD")
 
 
 def test_conversion_with_missing_exchange_rate(bank):
